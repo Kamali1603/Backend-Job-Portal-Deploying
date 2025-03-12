@@ -27,6 +27,13 @@ const signupSchema = Joi.object({
       "string.min": "\"password\" must be at least {#limit} characters long",
       "any.required": "\"password\" is required",
     }),
+    mobile: Joi.string()
+    .pattern(/^\d{10}$/)
+    .required()
+    .messages({
+      "string.pattern.base": '"mobile" must be a 10-digit number',
+      "any.required": '"mobile" is required',
+    }),
   role: Joi.string()
     .valid("user", "admin")
     .default("user")

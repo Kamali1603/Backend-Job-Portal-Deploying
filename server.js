@@ -11,27 +11,32 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
-app.use(errorHandler);
-
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-  })
-);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+app.use(limiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 
-db.sequelize.sync().then(() => {
-  console.log("Database connected");
-});
+app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+db.sequelize
+  .sync()
+  .then(() => {
+    console.log("Database connected");
+
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database:", error);
+  });

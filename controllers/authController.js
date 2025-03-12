@@ -4,7 +4,7 @@ const db = require("../models");
 
 const signup = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, mobile } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
